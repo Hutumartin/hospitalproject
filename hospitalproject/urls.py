@@ -10,7 +10,7 @@ from appointments.models import Appointment
 from billing.models import Billing
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
-from .auth_views import login_view, logout_view
+from .auth_views import login_view, logout_view, signup_view
 import json
 
 @login_required
@@ -65,6 +65,7 @@ urlpatterns = [
     path('', dashboard, name='dashboard'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
+    path('signup/', signup_view, name='signup'),
     path('patients/', include('patients.urls')),
     path('staff/', include('staff.urls')),
     path('appointments/', include('appointments.urls')),
