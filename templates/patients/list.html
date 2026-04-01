@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people me-2"></i>Patients</h2>
+    <a href="{% url 'patient_add' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Add Patient
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body py-2">
+        <form method="GET">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" class="form-control"
+                       placeholder="Search by name, email or phone..."
+                       value="{{ query }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if query %}
+                <a href="{% url 'patient_list' %}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Full Name</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Date of Birth</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ patient.full_name }}</td>
+                    <td>{{ patient.gender }}</td>
+                    <td>{{ patient.phone }}</td>
+                    <td>{{ patient.email }}</td>
+                    <td>{{ patient.date_of_birth }}</td>
+                    <td>
+                        <a href="{% url 'patient_records' patient.pk %}"
+                           class="btn btn-sm btn-info" title="Medical Records">
+                            <i class="bi bi-folder2-open"></i>
+                        </a>
+                        <a href="{% url 'patient_edit' patient.pk %}"
+                           class="btn btn-sm btn-warning" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'patient_delete' patient.pk %}"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Delete this patient?')"
+                           title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        {% if query %}
+                            No patients found for "{{ query }}"
+                        {% else %}
+                            No patients found. Add your first patient!
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-muted mt-2 small">
+            Showing {{ patients.count }} patient{{ patients.count|pluralize }}
+            {% if query %} for "{{ query }}"{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-receipt me-2"></i>Billing</h2>
+    <a href="{% url 'billing_add' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Add Bill
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body py-2">
+        <form method="GET">
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" name="q" class="form-control"
+                               placeholder="Search by patient name..."
+                               value="{{ query }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="unpaid" {% if status_filter == 'unpaid' %}selected{% endif %}>Unpaid</option>
+                        <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>Paid</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Patient</th>
+                    <th>Appointment</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in billings %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ bill.patient }}</td>
+                    <td>{{ bill.appointment }}</td>
+                    <td>KES {{ bill.amount }}</td>
+                    <td>
+                        {% if bill.status == 'paid' %}
+                            <span class="badge bg-success">Paid</span>
+                        {% else %}
+                            <span class="badge bg-danger">Unpaid</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ bill.created_at|date:'d M Y' }}</td>
+                    <td>
+                        <a href="{% url 'billing_invoice' bill.pk %}" class="btn btn-sm btn-success" target="_blank"
+                           title="Download Invoice">
+                            <i class="bi bi-file-pdf"></i>
+                        </a>
+                        <a href="{% url 'billing_edit' bill.pk %}" class="btn btn-sm btn-warning"
+                           title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'billing_delete' bill.pk %}" class="btn btn-sm btn-danger"
+                           onclick="return confirm('Delete this bill?')"
+                           title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        {% if query %}
+                            No bills found for "{{ query }}"
+                        {% else %}
+                            No bills found. Add your first bill!
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-muted mt-2 small">
+            Showing {{ billings.count }} bill{{ billings.count|pluralize }}
+            {% if query %} for "{{ query }}"{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

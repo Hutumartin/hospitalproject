@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-folder2-open me-2"></i>
+        Medical Records — {{ patient.full_name }}
+    </h2>
+    <div>
+        <a href="{% url 'record_upload' patient.pk %}" class="btn btn-primary me-2">
+            <i class="bi bi-upload me-1"></i> Upload Record
+        </a>
+        <a href="{% url 'patient_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="card mb-4 p-3">
+    <div class="row">
+        <div class="col-md-3">
+            <p class="text-muted mb-0">Full Name</p>
+            <p class="fw-bold">{{ patient.full_name }}</p>
+        </div>
+        <div class="col-md-3">
+            <p class="text-muted mb-0">Gender</p>
+            <p class="fw-bold">{{ patient.gender }}</p>
+        </div>
+        <div class="col-md-3">
+            <p class="text-muted mb-0">Phone</p>
+            <p class="fw-bold">{{ patient.phone }}</p>
+        </div>
+        <div class="col-md-3">
+            <p class="text-muted mb-0">Email</p>
+            <p class="fw-bold">{{ patient.email }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>File</th>
+                    <th>Uploaded</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ record.title }}</td>
+                    <td>{{ record.description }}</td>
+                    <td>
+                        <a href="{{ record.file.url }}" target="_blank"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-file-earmark me-1"></i>
+                            View File
+                        </a>
+                    </td>
+                    <td>{{ record.uploaded_at|date:'d M Y H:i' }}</td>
+                    <td>
+                        <a href="{% url 'record_delete' record.pk %}"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Delete this record?')">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        No medical records yet. Upload the first one!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-muted mt-2 small">
+            {{ records.count }} record{{ records.count|pluralize }} found
+        </div>
+    </div>
+</div>
+{% endblock %}
